@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: my-new-first-backstage-app
+  description: An example of a Backstage application.
+  # Example for optional annotations
+  annotations:
+    github.com/project-slug: blohith/MyFirstRepo
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  owner: development
+  lifecycle: experimental
