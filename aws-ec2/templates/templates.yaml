@@ -62,7 +62,7 @@ spec:
       name: Fetching Details from content folder
       action: fetch:template
       input:
-        url: ./content  # Location of the content directory where catlog-info.yaml file is present for the template
+        url: ./templates  # Location of the content directory where catlog-info.yaml file is present for the template
         values:
           name: ${{ parameters.InstanceName}}
 
@@ -83,7 +83,7 @@ spec:
       action: github:actions:dispatch
       input:
         workflowId:  instance.yml # ID of GitHub action WorkFlow
-        repoUrl: 'github.com?repo=aws-ec2&owner=sagar0419'
+        repoUrl: 'github.com?repo=aws-ec2&owner=blohith'
         branchOrTagName: 'master'
         workflowInputs:
           instanceName: ${{ parameters.InstanceName }}
