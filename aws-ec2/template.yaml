@@ -45,17 +45,17 @@ spec:
             - apply
             - destroy
 
-    - title: Choose a Repository Location
-      required:
-        - repoUrl
-      properties:
-        repoUrl:
-          title: Location of the repository
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
+    # - title: Choose a Repository Location
+    #   required:
+    #     - repoUrl
+    #   properties:
+    #     repoUrl:
+    #       title: Location of the repository
+    #       type: string
+    #       ui:field: RepoUrlPicker
+    #       ui:options:
+    #         allowedHosts:
+    #           - github.com
   steps:
 # Getting the all the files/details from the template
     - id: fetch-base
