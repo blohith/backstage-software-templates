@@ -1,12 +1,12 @@
-site_name: '${{values.name}}'
-site_description: 'Main documentation for ${{values.name}}'
-repo_url: https://github.com/blohith/${{values.name}}
-edit_uri: edit/main/docs
+# site_name: '${{values.name}}'
+# site_description: 'Main documentation for ${{values.name}}'
+# repo_url: https://github.com/blohith/${{values.name}}
+# edit_uri: edit/main/docs
 
-plugins:
-  - techdocs-core
+# plugins:
+#   - techdocs-core
 
-# For sidebar navigation on https://backstage.io/, see `microsite/sidebars.js`
-nav:
-  - Overview:
-      - Getting started: 'docs/index.md'
+# # For sidebar navigation on https://backstage.io/, see `microsite/sidebars.js`
+# nav:
+#   - Overview:
+#       - Getting started: 'docs/index.md'
