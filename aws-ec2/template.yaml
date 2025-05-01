@@ -65,6 +65,8 @@ spec:
         url: ./template  # Location of the content directory where catlog-info.yaml file is present for the template
         values:
           name: ${{ parameters.InstanceName}}
+          apply: ${{ parameters.action }}
+          destroy: ${{ parameters.action }}
 
 # Publish the content of the current working directory to our github directory
     - id: publish
