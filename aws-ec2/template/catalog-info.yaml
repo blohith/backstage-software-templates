@@ -11,3 +11,10 @@ spec:
   type: service
   owner: development
   lifecycle: experimental
+
+action: github:actions:dispatch
+input:
+  workflowId: instance.yml       # Must match the name in .github/workflows/
+  repoUrl: github.com?repo=backstage-ec2&owner=blohith
+  branch: main
+
