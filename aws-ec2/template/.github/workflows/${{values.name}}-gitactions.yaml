@@ -19,7 +19,6 @@ on:
 jobs:
   apply_ec2:
     runs-on: ubuntu-latest
-    if: '${{ github.event.inputs.action == 'apply' }}'
 
     steps:
       - name: Checkout code
