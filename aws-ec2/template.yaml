@@ -74,7 +74,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This repo is to create an ec2 instance ${{ parameters.InstanceName }} using backstage.
-        repoUrl: github.com?owner=blohith&repo=${{ parameters.InstanceName }}
+        repoUrl: github.com?owner=lohith-9Hi&repo=${{ parameters.InstanceName }}
         repoVisibility: public # or 'internal' or 'private'
         # defaultBranch: master
 
@@ -84,7 +84,7 @@ spec:
       action: github:actions:dispatch
       input:
         workflowId:  ${{ parameters.InstanceName }}-gitactions.yaml # ID of GitHub action WorkFlow
-        repoUrl: 'github.com?repo=${{ parameters.InstanceName }}&owner=blohith'
+        repoUrl: 'github.com?repo=${{ parameters.InstanceName }}&owner=lohith-9Hi'
         branchOrTagName: 'main'
         workflowInputs:
           instanceName: ${{ parameters.InstanceName }}
