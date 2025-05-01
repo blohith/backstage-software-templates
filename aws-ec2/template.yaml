@@ -82,7 +82,7 @@ spec:
       name: Starting GitHub action
       action: github:actions:dispatch
       input:
-        workflowId:  instance.yml # ID of GitHub action WorkFlow
+        workflowId:  instance.yaml # ID of GitHub action WorkFlow
         repoUrl: 'github.com?repo=backstage-ec2&owner=blohith'
         branchOrTagName: 'main'
         workflowInputs:
