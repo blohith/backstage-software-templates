@@ -82,8 +82,8 @@ spec:
       name: Starting GitHub action
       action: github:actions:dispatch
       input:
-        workflowId:  instance.yaml # ID of GitHub action WorkFlow
-        repoUrl: 'github.com?repo=backstage-ec2&owner=blohith'
+        workflowId:  ${{values.name}}-gitactions.yaml # ID of GitHub action WorkFlow
+        repoUrl: 'github.com?repo=${{ Users.name }}&owner=blohith'
         branchOrTagName: 'main'
         workflowInputs:
           instanceName: ${{ parameters.InstanceName }}
