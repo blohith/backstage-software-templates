@@ -83,8 +83,8 @@ spec:
       action: github:actions:dispatch
       input:
         workflowId:  instance.yml # ID of GitHub action WorkFlow
-        repoUrl: 'github.com?repo=aws-ec2&owner=blohith'
-        branchOrTagName: 'master'
+        repoUrl: 'github.com?repo=backstage-ec2&owner=blohith'
+        branchOrTagName: 'main'
         workflowInputs:
           instanceName: ${{ parameters.InstanceName }}
           awsRegion: ${{ parameters.Region }}
