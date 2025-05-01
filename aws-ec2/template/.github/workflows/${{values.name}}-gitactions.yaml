@@ -19,7 +19,7 @@ on:
 jobs:
   apply_ec2:
     runs-on: ubuntu-latest
-    if: ${{'${{ github.event.inputs.action == 'apply' }}'}}
+    if: ${{' '${{ github.event.inputs.action == 'apply' }}' '}}
 
     steps:
       - name: Checkout code
@@ -64,7 +64,7 @@ jobs:
 
   destroy_instance:
     runs-on: ubuntu-latest
-    if: ${{'${{ github.event.inputs.action == 'destroy' }}'}}
+    if: ${{' '${{ github.event.inputs.action == 'destroy' }}' '}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
