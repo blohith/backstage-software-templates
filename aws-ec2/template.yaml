@@ -83,7 +83,7 @@ spec:
       action: github:actions:dispatch
       input:
         workflowId:  ${{values.name}}-gitactions.yaml # ID of GitHub action WorkFlow
-        repoUrl: 'github.com?repo=${{ Users.name }}&owner=blohith'
+        repoUrl: 'github.com?repo=${{values.name}}&owner=blohith'
         branchOrTagName: 'main'
         workflowInputs:
           instanceName: ${{ parameters.InstanceName }}
