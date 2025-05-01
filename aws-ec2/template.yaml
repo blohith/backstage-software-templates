@@ -73,7 +73,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This repo is to create an ec2 instance ${{ parameters.InstanceName }} using backstage.
-        repoUrl: ${{ parameters.repoUrl }}
+        repoUrl: github.com?repo=${{values.name}}&owner=blohith
         repoVisibility: public # or 'internal' or 'private'
         # defaultBranch: master
 
