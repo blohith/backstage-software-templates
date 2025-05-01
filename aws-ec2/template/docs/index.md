@@ -1,3 +1,3 @@
-# Documents for MyFirst App
+# Documents for ${{values.name}} 
 
-Hi! This is a document for my first repo with github actions
+Hi! This is a document for ${{values.name}} with github actions
