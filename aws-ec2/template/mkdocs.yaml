@@ -1,6 +1,6 @@
 site_name: '${{values.name}}'
 site_description: 'Main documentation for ${{values.name}}'
-repo_url: https://github.com/blohith/${{values.name}}
+repo_url: https://github.com/lohith-9Hi/${{values.name}}
 edit_uri: edit/main/docs
 
 plugins:
