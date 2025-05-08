@@ -120,7 +120,7 @@ spec:
       name: Fetch Terraform Project
       action: fetch:plain
       input:
-        url: https://github.com/Capgemini-Innersource/ptr_terraform_aws_fnol_agent/tree/terraform-scripts-of-fnol-aws-agent
+        url: https://github.com/lohith-9Hi/terraform_fnol_agent
 
     - id: render-variables
       name: Render terraform.tfvars
@@ -155,7 +155,7 @@ spec:
       name: Commit Terraform Inputs
       action: publish:github
       input:
-        repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr_terraform_aws_fnol_agent
+        repoUrl: github.com?owner=lohith-9Hi&repo=terraform_fnol_agent
         branch: main
         filePath: ./workspace
 
@@ -163,11 +163,11 @@ spec:
       name: Trigger Terraform Apply
       action: github:actions:dispatch
       input:
-        repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr_terraform_aws_fnol_agent
+        repoUrl: github.com?owner=lohith-9Hi&repo=terraform_fnol_agent
         workflowId: terraform.yml
         branch: main
         inputs: {}
   output:
     links:
       - title: View Infra Repo
-        url: https://github.com/Capgemini-Innersource/ptr_terraform_aws_fnol_agent/tree/terraform-scripts-of-fnol-aws-agent
+        url: https://github.com/lohith-9Hi/terraform_fnol_agent
