@@ -1,0 +1,174 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: devops-aws-agent-infra
+  title: Devops INS Agent Provision or update AWS Infra (EC2, S3, EKS, ECR).
+  description: Provisioning a Devops INS aws agent using Backstage and Terraform.
+  tags:
+    - aws
+    - terraform
+    - ec2
+    - s3
+    - eks
+    - ecr
+spec:
+  owner: development
+  type: service 
+
+  parameters:
+    - title: General AWS Inputs
+      required:
+        - aws_region
+      properties:
+        aws_region:
+          title: AWS Region
+          type: string
+          default: us-east-1
+
+    - title: EC2 Configuration
+      required:
+        - ec2_instance_type
+        - ec2_ami_id
+        - ec2_key_name
+        - ec2_subnet_id
+      properties:
+        ec2_instance_type:
+          type: string
+          title: EC2 Instance Type
+          default: t2.micro
+        ec2_ami_id:
+          type: string
+          title: AMI ID
+        ec2_key_name:
+          type: string
+          title: Key Pair Name
+          default: devops-key-pair
+        ec2_subnet_id:
+          type: string
+          title: Subnet ID
+          default: subnet-0b5cfdd67820106f0
+
+    - title: S3 Configuration
+      required:
+        - s3_bucket_name
+      properties:
+        s3_bucket_name:
+          type: string
+          title: S3 Bucket Name
+        s3_acl:
+          type: string
+          title: S3 ACL
+          default: private
+
+    - title: EKS Configuration
+      required:
+        - eks_cluster_name
+        - eks_subnet_ids
+        - eks_node_group_name
+      properties:
+        eks_cluster_name:
+          type: string
+          title: Cluster Name
+        eks_cluster_version:
+          type: string
+          title: Kubernetes Version
+          default: "1.29"
+        eks_subnet_ids:
+          type: array
+          title: Subnet IDs
+          items:
+            type: string
+          default:
+            - subnet-0b5cfdd67820106f0
+        eks_node_instance_type:
+          type: string
+          title: Node Instance Type
+          default: t3.medium
+        eks_desired_capacity:
+          type: number
+          title: Desired Node Count
+          default: 2
+        eks_min_size:
+          type: number
+          title: Min Node Count
+          default: 1
+        eks_max_size:
+          type: number
+          title: Max Node Count
+          default: 3
+
+    - title: ECR Configuration
+      required:
+        - ecr_repository_name
+      properties:
+        ecr_repository_name:
+          type: string
+          title: ECR Repository Name
+        ecr_image_tag_mutability:
+          type: string
+          title: Image Tag Mutability
+          enum:
+            - MUTABLE
+            - IMMUTABLE
+          default: MUTABLE
+        ecr_scan_on_push:
+          type: boolean
+          title: Scan On Push
+          default: true
+
+  steps:
+    - id: fetch
+      name: Fetch Terraform Project
+      action: fetch:plain
+      input:
+        url: https://github.com/Capgemini-Innersource/ptr_terraform_aws_fnol_agent/tree/terraform-scripts-of-fnol-aws-agent
+
+    - id: render-variables
+      name: Render terraform.tfvars
+      action: template:files
+      input:
+        targetPath: ./workspace
+        files:
+          - path: terraform.tfvars
+            content: |
+              aws_region = "${{ parameters.aws_region }}"
+
+              ec2_instance_type = "${{ parameters.ec2_instance_type }}"
+              ec2_ami_id = "${{ parameters.ec2_ami_id }}"
+              ec2_key_name = "${{ parameters.ec2_key_name }}"
+              ec2_subnet_id = "${{ parameters.ec2_subnet_id }}"
+
+              s3_bucket_name = "${{ parameters.s3_bucket_name }}"
+              s3_acl = "${{ parameters.s3_acl }}"
+
+              eks_cluster_name = "${{ parameters.eks_cluster_name }}"
+              eks_cluster_version = "${{ parameters.eks_cluster_version }}"
+              eks_subnet_ids = [${{ parameters.eks_subnet_ids | join(', ') | dump }}]
+              eks_desired_capacity = ${{ parameters.eks_desired_capacity }}
+              eks_min_size = ${{ parameters.eks_min_size }}
+              eks_max_size = ${{ parameters.eks_max_size }}
+
+              ecr_repository_name = "${{ parameters.ecr_repository_name }}"
+              ecr_image_tag_mutability = "${{ parameters.ecr_image_tag_mutability }}"
+              ecr_scan_on_push = ${{ parameters.ecr_scan_on_push }}
+
+    - id: publish
+      name: Commit Terraform Inputs
+      action: publish:github
+      input:
+        repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr_terraform_aws_fnol_agent
+        branch: main
+        filePath: ./workspace
+
+    - id: trigger
+      name: Trigger Terraform Apply
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr_terraform_aws_fnol_agent
+        workflowId: terraform.yml
+        branch: main
+        inputs: {}
+  output:
+    links:
+      - title: View Infra Repo
+        url: https://github.com/Capgemini-Innersource/ptr_terraform_aws_fnol_agent/tree/terraform-scripts-of-fnol-aws-agent
