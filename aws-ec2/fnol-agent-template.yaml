@@ -46,10 +46,14 @@ spec:
         ec2_key_name:
           type: string
           title: Key Pair Name
+          enum:
+            - fnol-key-pair          
           default: fnol-key-pair
         ec2_subnet_id:
           type: string
           title: Subnet ID
+          enum:
+            - subnet-0b5cfdd67820106f0          
           default: subnet-0b5cfdd67820106f0
 
     - title: S3 Configuration
@@ -62,6 +66,8 @@ spec:
         s3_acl:
           type: string
           title: S3 ACL
+          enum:
+            - private          
           default: private
 
     - title: EKS Configuration
@@ -75,29 +81,41 @@ spec:
         eks_cluster_version:
           type: string
           title: Kubernetes Version
+          enum:
+            - "1.29"          
           default: "1.29"
         eks_subnet_ids:
           type: array
           title: Subnet IDs
           items:
             type: string
+          enum:
+            - subnet-0b5cfdd67820106f0            
           default:
             - subnet-0b5cfdd67820106f0
         eks_node_instance_type:
           type: string
           title: Node Instance Type
+          enum:
+            - t3.medium          
           default: t3.medium
         eks_desired_capacity:
           type: number
           title: Desired Node Count
+          enum:
+            - "2"           
           default: 2
         eks_min_size:
           type: number
           title: Min Node Count
+          enum:
+            - "1"           
           default: 1
         eks_max_size:
           type: number
           title: Max Node Count
+          enum:
+            - "3"           
           default: 3
 
     - title: ECR Configuration
