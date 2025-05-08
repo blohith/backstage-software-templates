@@ -64,7 +64,6 @@ spec:
       required:
         - eks_cluster_name
         - eks_subnet_ids
-        - eks_node_group_name
       properties:
         eks_cluster_name:
           type: string
