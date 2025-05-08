@@ -88,9 +88,7 @@ spec:
           type: array
           title: Subnet IDs
           items:
-            type: string
-          enum:
-            - subnet-0b5cfdd67820106f0            
+            type: string            
           default:
             - subnet-0b5cfdd67820106f0
         eks_node_instance_type:
@@ -101,21 +99,15 @@ spec:
           default: t3.medium
         eks_desired_capacity:
           type: number
-          title: Desired Node Count
-          enum:
-            - "2"           
+          title: Desired Node Count         
           default: 2
         eks_min_size:
           type: number
-          title: Min Node Count
-          enum:
-            - "1"           
+          title: Min Node Count         
           default: 1
         eks_max_size:
           type: number
-          title: Max Node Count
-          enum:
-            - "3"           
+          title: Max Node Count          
           default: 3
 
     - title: ECR Configuration
