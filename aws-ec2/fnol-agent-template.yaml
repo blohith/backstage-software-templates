@@ -23,6 +23,8 @@ spec:
         aws_region:
           title: AWS Region
           type: string
+          enum:
+            - us-east-1          
           default: us-east-1
 
     - title: EC2 Configuration
@@ -35,6 +37,8 @@ spec:
         ec2_instance_type:
           type: string
           title: EC2 Instance Type
+          enum:
+            - t2.micro          
           default: t2.micro
         ec2_ami_id:
           type: string
