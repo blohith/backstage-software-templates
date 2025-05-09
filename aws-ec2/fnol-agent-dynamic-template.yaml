@@ -58,7 +58,7 @@ spec:
       input:
         repoUrl: github.com?repo=terraform_fnol_agent&owner=lohith-9Hi
         workflowId: terraform.yml
-        branch: main
+        branchOrTagName: main
         inputs:
           action: ${{ parameters.action }}
           agent_identifier_name: ${{ parameters.agent_identifier_name }}
