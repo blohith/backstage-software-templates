@@ -18,14 +18,14 @@ spec:
   parameters:
     - title: FNOL AWS Agent Infrastructure Inputs
       required:
-        - action
+        - agent_action
         - agent_identifier_name
         - s3_bucket_name
         - ecr_repo_name
         - eks_cluster_name
         - k8s_node_instance_type
       properties:
-        action:
+        agent_action:
           type: string
           title: Action
           enum:
@@ -60,7 +60,7 @@ spec:
         workflowId: terraform.yml
         branchOrTagName: main
         inputs:
-          action: ${{ parameters.action }}
+          agent_action: ${{ parameters.agent_action }}
           agent_identifier_name: ${{ parameters.agent_identifier_name }}
           s3_bucket_name: ${{ parameters.s3_bucket_name }}
           ecr_repo_name: ${{ parameters.ecr_repo_name }}
