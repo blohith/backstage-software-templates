@@ -69,4 +69,4 @@ spec:
   output:
     links:
       - title: View Infra Repo
-        url: https://github.com/lohith-9Hi/terraform_fnol_agent
+        url: https://github.com/lohith-9Hi/terraform_fnol_agent/actions
