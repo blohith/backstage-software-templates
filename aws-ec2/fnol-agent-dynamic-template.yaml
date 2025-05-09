@@ -1,0 +1,72 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: fnol-aws-agent-infra
+  title: FNOL INS Agent Provision or update AWS Infra (EC2, S3, EKS, ECR).
+  description: Provisioning a FNOL INS aws agent using Backstage and Terraform.
+  tags:
+    - aws
+    - terraform
+    - ec2
+    - s3
+    - eks
+    - ecr
+spec:
+  owner: development
+  type: service 
+
+  parameters:
+    - title: FNOL AWS Agent Infrastructure Inputs
+      required:
+        - action
+        - agent_identifier_name
+        - s3_bucket_name
+        - ecr_repo_name
+        - eks_cluster_name
+        - k8s_node_instance_type
+      properties:
+        action:
+          type: string
+          title: Action
+          enum:
+            - create
+            - destroy
+          default: create
+        agent_identifier_name:
+          type: string
+          title: Agent Identifier Name
+        s3_bucket_name:
+          type: string
+          title: S3 Bucket Name
+        ecr_repo_name:
+          type: string
+          title: ECR Repository Name
+        eks_cluster_name:
+          type: string
+          title: EKS Cluster Name
+        k8s_node_instance_type:
+          type: string
+          title: Kubernetes Node Instance Type
+          enum:
+            - t3.medium
+          default: t3.medium    
+
+  steps:
+    - id: dispatch
+      name: Trigger Terraform Workflow
+      action: github:actions:dispatch
+      input:
+        repoUrl: github.com?repo=terraform_fnol_agent&owner=lohith-9Hi
+        workflowId: terraform.yml
+        branch: main
+        inputs:
+          action: ${{ parameters.action }}
+          agent_identifier_name: ${{ parameters.agent_identifier_name }}
+          s3_bucket_name: ${{ parameters.s3_bucket_name }}
+          ecr_repo_name: ${{ parameters.ecr_repo_name }}
+          eks_cluster_name: ${{ parameters.eks_cluster_name }}
+
+  output:
+    links:
+      - title: View Infra Repo
+        url: https://github.com/lohith-9Hi/terraform_fnol_agent
