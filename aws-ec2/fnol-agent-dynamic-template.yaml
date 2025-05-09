@@ -27,10 +27,7 @@ spec:
       properties:
         agent_action:
           type: string
-          title: Action
-          enum:
-            - create
-            - destroy
+          title: Agent Action
           default: create
         agent_identifier_name:
           type: string
