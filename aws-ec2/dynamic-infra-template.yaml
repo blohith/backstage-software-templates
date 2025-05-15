@@ -86,8 +86,8 @@ spec:
         branchOrTagName: 'main'
         workflowInputs:
           agent_identifier_name: ${{ parameters.agent_identifier_name }}
-          agent_action: ${{ parameters.action }}
           components: ${{ parameters.infra_components | join(',') }}
+          agent_action: ${{ parameters.action }}          
 
     - id: register
       name: Register Agent Repo in Backstage
