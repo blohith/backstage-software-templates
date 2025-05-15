@@ -76,15 +76,21 @@ jobs:
             -backend-config="encrypt=true"
 
       - name: Terraform Plan
-        run: terraform plan -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+        run: |
+          COMPONENT_LIST=$(echo "${COMPONENTS}" | awk -F',' '{for (i=1; i<=NF; i++) printf "\"%s\",", $i}' | sed 's/,$//')
+          terraform plan -var="agent_identifier_name=${AGENT_NAME}" -var="components=[${COMPONENT_LIST}]"        
 
       - name: Terraform Apply/Destroy
         if: env.ACTION == 'create'
-        run: terraform apply -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+        run: |
+          COMPONENT_LIST=$(echo "${COMPONENTS}" | awk -F',' '{for (i=1; i<=NF; i++) printf "\"%s\",", $i}' | sed 's/,$//')  
+          terraform apply -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENT_LIST}"
 
       - name: Terraform Destroy
         if: env.ACTION == 'destroy'
-        run: terraform destroy -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+        run: |
+          COMPONENT_LIST=$(echo "${COMPONENTS}" | awk -F',' '{for (i=1; i<=NF; i++) printf "\"%s\",", $i}' | sed 's/,$//')        
+          terraform destroy -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENT_LIST}"
 
       - name: Save Audit Logs
         run: |
