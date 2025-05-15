@@ -12,10 +12,21 @@ on:
         description: 'Action'
         required: true
 
+permissions:
+  contents: write
+
 jobs:
   terraform:
     runs-on: ubuntu-latest    
-
+    env:
+      AWS_ACCESS_KEY_ID: ${{ '${{ secrets.AWS_ACCESS_KEY_ID }}' }}
+      AWS_SECRET_ACCESS_KEY: ${{ '${{ secrets.AWS_SECRET_ACCESS_KEY }}' }}
+      AWS_REGION: ${{ '${{ secrets.AWS_REGION }}' }}
+      TOKEN_GITHUB: ${{ '${{ secrets.TOKEN_GITHUB }}' }}
+      COMPONENTS: ${{ '${{ github.event.inputs.components }}' }}
+      ACTION: ${{ '${{ github.event.inputs.agent_action }}' }}
+      AGENT_NAME: ${{ '${{ github.event.inputs.agent_identifier_name }}' }}
+      
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
