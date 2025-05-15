@@ -1,0 +1,115 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: dynamic-infra-provisioner
+  title: Runtime Dynamic AWS Infra Provisioning
+  description: Provision or destroy AWS infrastructure dynamically for selected Agents.
+spec:
+  owner: development
+  type: service
+  parameters:
+    - title: Infra Request Inputs
+      required: [agent_identifier_name, platform, infra_components, action]
+      properties:
+        agent_identifier_name:
+          type: string
+          title: Agent Name
+        platform:
+          type: string
+          title: Hyperscaler Platform
+          enum: [AWS, Azure, GCP]
+        infra_components:
+          type: array
+          title: Infra Components Needed
+          items:
+            type: string
+            enum: [EC2, S3, ECR, EKS, SQS, Bedrock, Cloudfront]
+          uniqueItems: true
+        action:
+          type: string
+          title: Action
+          enum: [create, destroy]
+          default: create
+  steps:
+    - id: fetch-template
+      name: Fetch Template Files
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          agent_identifier_name: ${{ parameters.agent_identifier_name }}
+          components: ${{ parameters.infra_components | join(',') }}
+          agent_action: ${{ parameters.action }}
+
+    - id: publish
+      name: Publish Template to GitHub
+      action: publish:github
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.agent_identifier_name }}  agent Repo for provisioning
+        repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr-${{ parameters.agent_identifier_name }}
+        defaultBranch: main
+        protectDefaultBranch: false
+  
+  # steps:
+  #   - id: fetch-template
+  #     name: Create Repo from Template
+  #     action: github:repo:create
+  #     if: ${{ parameters.action == 'create' }}
+  #     input:
+  #       repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr-${{ parameters.agent_identifier_name }}
+  #       description: Provisioning repo for agent
+  #       template:
+  #         repo: ptr_backstage_template_aws_agents
+  #         owner: Capgemini-Innersource
+  #         path: ./dynamic-repo-template
+  #         branch: main
+  #       private: true
+
+    # - id: set-secret
+    #   name: Set AWS & GITHUB_PAT Secret
+    #   action: github:secrets
+    #   input:
+    #     repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr-${{ parameters.agent_identifier_name }}
+    #     secrets:
+    #       GITHUB_PAT: "${{ secrets.agent_github_pat }}"
+    #       AWS_ACCESS_KEY_ID: "${{ secrets.agent_aws_access_key_id }}"
+    #       AWS_SECRET_ACCESS_KEY: "${{ secrets.agent_aws_secret_access_key }}"
+    #       AWS_REGION: "${{ secrets.agent_aws_region }}" 
+
+    - id: trigger-terraform
+      name: Trigger GitHub Workflow
+      action: github:actions:dispatch
+      input:
+        workflowId: terraform.yml      
+        repoUrl: 'github.com?repo=ptr-${{ parameters.agent_identifier_name }}&owner=Capgemini-Innersource'
+        branchOrTagName: 'main'
+        workflowInputs:
+          agent_identifier_name: ${{ parameters.agent_identifier_name }}
+          agent_action: ${{ parameters.action }}
+          components: ${{ parameters.infra_components | join(',') }}
+
+    - id: register
+      name: Register Agent Repo in Backstage
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+        
+    - id: notify-result
+      name: Notify Completion
+      action: debug:log
+      input:
+        message: 'Terraform provisioning has been triggered for agent ${{ parameters.agent_identifier_name }}.'
+
+  output:
+    links:
+      - title: Deployment Status
+        url: https://github.com/Capgemini-Innersource/ptr-${{ parameters.agent_identifier_name }}/actions/workflows/terraform.yml/badge.svg
+      - title: View Agent Repo
+        url: https://github.com/Capgemini-Innersource/ptr-${{ parameters.agent_identifier_name }}
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}       
