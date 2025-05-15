@@ -49,33 +49,7 @@ spec:
         description: This is ${{ parameters.agent_identifier_name }}  agent Repo for provisioning
         repoUrl: github.com?owner=lohith-9Hi&repo=ptr-${{ parameters.agent_identifier_name }}
         defaultBranch: main
-        protectDefaultBranch: false
-  
-  # steps:
-  #   - id: fetch-template
-  #     name: Create Repo from Template
-  #     action: github:repo:create
-  #     if: ${{ parameters.action == 'create' }}
-  #     input:
-  #       repoUrl: github.com?owner=lohith-9Hi&repo=ptr-${{ parameters.agent_identifier_name }}
-  #       description: Provisioning repo for agent
-  #       template:
-  #         repo: ptr_backstage_template_aws_agents
-  #         owner: lohith-9Hi
-  #         path: ./dynamic-repo-template
-  #         branch: main
-  #       private: true
-
-    # - id: set-secret
-    #   name: Set AWS & GITHUB_PAT Secret
-    #   action: github:secrets
-    #   input:
-    #     repoUrl: github.com?owner=lohith-9Hi&repo=ptr-${{ parameters.agent_identifier_name }}
-    #     secrets:
-    #       GITHUB_PAT: "${{ secrets.agent_github_pat }}"
-    #       AWS_ACCESS_KEY_ID: "${{ secrets.agent_aws_access_key_id }}"
-    #       AWS_SECRET_ACCESS_KEY: "${{ secrets.agent_aws_secret_access_key }}"
-    #       AWS_REGION: "${{ secrets.agent_aws_region }}" 
+        visibility: public
 
     - id: trigger-terraform
       name: Trigger GitHub Workflow

@@ -27,12 +27,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Debug Input Values
+        run: |
+          echo "AGENT_NAME: $AGENT_NAME"
+          echo "COMPONENTS: $COMPONENTS"
+          echo "ACTION: $ACTION"  
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
       - name: Prepare Terraform Backend
         run: |
-          cat > backend.tf <<EOF
+          cat > backend.tf <<EOF2
           terraform {
             backend "s3" {
               bucket = "proctor-runtime-infra-terraform-state"
@@ -42,15 +48,18 @@ jobs:
               encrypt        = true
             }
           }
-          EOF
+          EOF2
 
       - name: Fetch Terraform Modules
         run: |
-          echo 'module "selected" {' > main.tf
-          echo '  source = "git::https://${TOKEN_GITHUB}@github.com/Capgemini-Innersource/ptr_iac_aws.git//modules?ref=TestRunTimeDynamicFlow"' >> main.tf
-          echo '  agent_identifier_name = "${AGENT_NAME}"' >> main.tf
-          echo '  components = split(",", "${COMPONENTS}")' >> main.tf
-          echo '}' >> main.tf
+          echo "Generating main.tf for agent: $AGENT_NAME with components: $COMPONENTS"
+          echo "module \"selected\" {" > main.tf
+          echo "  source = \"git::https://${TOKEN_GITHUB}@github.com/lohith-9Hi/ptr_iac_aws.git//modules?ref=main\"" >> main.tf
+          echo "  agent_identifier_name = \"${AGENT_NAME}\"" >> main.tf
+          echo "  components = split(\",\", \"${COMPONENTS}\")" >> main.tf
+          echo "}" >> main.tf
+          echo "----- Generated main.tf -----"
+          cat main.tf
       
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -77,11 +86,11 @@ jobs:
         run: |
           mkdir -p audit
           echo "{\"agent\":\"${AGENT_NAME}\",\"components\":\"${COMPONENTS}\",\"action\":\"${ACTION}\",\"status\":\"success\"}" > audit/${AGENT_NAME}.json
-          git clone https://github.com/Capgemini-Innersource/ptr_iac_aws.git temp-audit
+          git clone https://github.com/lohith-9Hi/ptr_iac_aws.git temp-audit
           mv audit/${AGENT_NAME}.json temp-audit/audit/
           cd temp-audit
-          git config user.name "ebhukke"
-          git config user.email "eswar-lohith.bhukke@capgemini.com"
+          git config user.name "blohith"
+          git config user.email "eswarlohithbhukke@gmail.com"
           git add .
           git commit -m "Audit log for ${AGENT_NAME}"
           git push
