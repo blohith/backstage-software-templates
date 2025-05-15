@@ -26,7 +26,7 @@ jobs:
       COMPONENTS: ${{ '${{ github.event.inputs.components }}' }}
       ACTION: ${{ '${{ github.event.inputs.agent_action }}' }}
       AGENT_NAME: ${{ '${{ github.event.inputs.agent_identifier_name }}' }}
-      
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -76,15 +76,15 @@ jobs:
             -backend-config="encrypt=true"
 
       - name: Terraform Plan
-        run: terraform plan -var="agent_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+        run: terraform plan -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
 
       - name: Terraform Apply/Destroy
         if: env.ACTION == 'create'
-        run: terraform apply -auto-approve -var="agent_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+        run: terraform apply -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
 
       - name: Terraform Destroy
         if: env.ACTION == 'destroy'
-        run: terraform destroy -auto-approve -var="agent_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+        run: terraform destroy -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
 
       - name: Save Audit Logs
         run: |
