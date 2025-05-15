@@ -1,16 +1,10 @@
 
-variable "awsRegion" {
-  description = "AWS Region for deployment"
+variable "agent_identifier_name" {
+  description = "Unique name of the agent"
   type        = string
 }
 
-
-variable "instanceName" {
-  description = "Name of the EC2 instance"
-  type        = string
-}
-
-variable "instanceType" {
-  description = "Type of EC2 instance"
-  type        = string
+variable "components" {
+  description = "List of components to provision"
+  type        = list(string)
 }

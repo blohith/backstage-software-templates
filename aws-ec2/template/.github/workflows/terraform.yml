@@ -1,0 +1,87 @@
+name: Terraform Workflow
+on:
+  workflow_dispatch:
+    inputs:
+      agent_identifier_name:
+        description: 'Agent Identifier Name'
+        required: true
+      components:
+        description: 'Infra Components Needed'
+        required: true
+      agent_action:
+        description: 'Action'
+        required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest    
+    env:
+      AWS_ACCESS_KEY_ID: ${{ '${{ secrets.AWS_ACCESS_KEY_ID }}' }}
+      AWS_SECRET_ACCESS_KEY: ${{ '${{ secrets.AWS_SECRET_ACCESS_KEY }}' }}
+      AWS_REGION: ${{ '${{ secrets.AWS_REGION }}' }}
+      TOKEN_GITHUB: ${{ '${{ secrets.TOKEN_GITHUB }}' }}
+      COMPONENTS: ${{ '${{ github.event.inputs.components }}' }}
+      ACTION: ${{ '${{ github.event.inputs.agent_action }}' }}
+      AGENT_NAME: ${{ '${{ github.event.inputs.agent_identifier_name }}' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Prepare Terraform Backend
+        run: |
+          cat > backend.tf <<EOF
+          terraform {
+            backend "s3" {
+              bucket = "proctor-runtime-infra-terraform-state"
+              key    = "states/${AGENT_NAME}/terraform.tfstate"
+              region = "us-east-1"
+              dynamodb_table = "runtime-infra-terraform-locks"
+              encrypt        = true
+            }
+          }
+          EOF
+
+      - name: Fetch Terraform Modules
+        run: |
+          echo 'module "selected" {' > main.tf
+          echo '  source = "git::https://${TOKEN_GITHUB}@github.com/Capgemini-Innersource/ptr_iac_aws.git//modules?ref=TestRunTimeDynamicFlow"' >> main.tf
+          echo '  agent_identifier_name = "${AGENT_NAME}"' >> main.tf
+          echo '  components = split(",", "${COMPONENTS}")' >> main.tf
+          echo '}' >> main.tf
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ '${{ secrets.AWS_ACCESS_KEY_ID }}' }}
+          aws-secret-access-key: ${{ '${{ secrets.AWS_SECRET_ACCESS_KEY }}' }}
+          aws-region: 'us-east-1'
+      
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -var="agent_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+
+      - name: Terraform Apply/Destroy
+        if: env.ACTION == 'create'
+        run: terraform apply -auto-approve -var="agent_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+
+      - name: Terraform Destroy
+        if: env.ACTION == 'destroy'
+        run: terraform destroy -auto-approve -var="agent_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
+
+      - name: Save Audit Logs
+        run: |
+          mkdir -p audit
+          echo "{\"agent\":\"${AGENT_NAME}\",\"components\":\"${COMPONENTS}\",\"action\":\"${ACTION}\",\"status\":\"success\"}" > audit/${AGENT_NAME}.json
+          git clone https://github.com/Capgemini-Innersource/ptr_iac_aws.git temp-audit
+          mv audit/${AGENT_NAME}.json temp-audit/audit/
+          cd temp-audit
+          git config user.name "ebhukke"
+          git config user.email "eswar-lohith.bhukke@capgemini.com"
+          git add .
+          git commit -m "Audit log for ${AGENT_NAME}"
+          git push

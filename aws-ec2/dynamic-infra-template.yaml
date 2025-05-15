@@ -47,7 +47,7 @@ spec:
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.agent_identifier_name }}  agent Repo for provisioning
-        repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr-${{ parameters.agent_identifier_name }}
+        repoUrl: github.com?owner=lohith-9Hi&repo=ptr-${{ parameters.agent_identifier_name }}
         defaultBranch: main
         protectDefaultBranch: false
   
@@ -57,11 +57,11 @@ spec:
   #     action: github:repo:create
   #     if: ${{ parameters.action == 'create' }}
   #     input:
-  #       repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr-${{ parameters.agent_identifier_name }}
+  #       repoUrl: github.com?owner=lohith-9Hi&repo=ptr-${{ parameters.agent_identifier_name }}
   #       description: Provisioning repo for agent
   #       template:
   #         repo: ptr_backstage_template_aws_agents
-  #         owner: Capgemini-Innersource
+  #         owner: lohith-9Hi
   #         path: ./dynamic-repo-template
   #         branch: main
   #       private: true
@@ -70,7 +70,7 @@ spec:
     #   name: Set AWS & GITHUB_PAT Secret
     #   action: github:secrets
     #   input:
-    #     repoUrl: github.com?owner=Capgemini-Innersource&repo=ptr-${{ parameters.agent_identifier_name }}
+    #     repoUrl: github.com?owner=lohith-9Hi&repo=ptr-${{ parameters.agent_identifier_name }}
     #     secrets:
     #       GITHUB_PAT: "${{ secrets.agent_github_pat }}"
     #       AWS_ACCESS_KEY_ID: "${{ secrets.agent_aws_access_key_id }}"
@@ -82,7 +82,7 @@ spec:
       action: github:actions:dispatch
       input:
         workflowId: terraform.yml      
-        repoUrl: 'github.com?repo=ptr-${{ parameters.agent_identifier_name }}&owner=Capgemini-Innersource'
+        repoUrl: 'github.com?repo=ptr-${{ parameters.agent_identifier_name }}&owner=lohith-9Hi'
         branchOrTagName: 'main'
         workflowInputs:
           agent_identifier_name: ${{ parameters.agent_identifier_name }}
@@ -105,9 +105,9 @@ spec:
   output:
     links:
       - title: Deployment Status
-        url: https://github.com/Capgemini-Innersource/ptr-${{ parameters.agent_identifier_name }}/actions/workflows/terraform.yml/badge.svg
+        url: https://github.com/lohith-9Hi/ptr-${{ parameters.agent_identifier_name }}/actions/workflows/terraform.yml/badge.svg
       - title: View Agent Repo
-        url: https://github.com/Capgemini-Innersource/ptr-${{ parameters.agent_identifier_name }}
+        url: https://github.com/lohith-9Hi/ptr-${{ parameters.agent_identifier_name }}
       - title: Repository
         url: ${{ steps['publish'].output.remoteUrl }}
       - title: Open in catalog

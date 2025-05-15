@@ -1,13 +1,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: ${{values.name}}
-  description: An example of a Backstage application.
-  # Example for optional annotations
+  name: ptr-${{ values.agent_identifier_name }}
+  description: ${{ values.agent_identifier_name }} Infra agent for provisioning
   annotations:
-    github.com/project-slug: lohith-9Hi/${{values.name}}
-    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: Capgemini-Innersource/ptr-${{ values.agent_identifier_name }}
 spec:
   type: service
+  lifecycle: production
   owner: development
-  lifecycle: experimental
