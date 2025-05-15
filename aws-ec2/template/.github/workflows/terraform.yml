@@ -97,6 +97,7 @@ jobs:
           mkdir -p audit
           echo "{\"agent\":\"${AGENT_NAME}\",\"components\":\"${COMPONENTS}\",\"action\":\"${ACTION}\",\"status\":\"success\"}" > audit/${AGENT_NAME}.json
           git clone https://github.com/lohith-9Hi/ptr_iac_aws.git temp-audit
+          mkdir -p temp-audit/audit
           mv audit/${AGENT_NAME}.json temp-audit/audit/
           cd temp-audit
           git config user.name "blohith"
