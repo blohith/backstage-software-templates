@@ -44,6 +44,7 @@ spec:
     - id: publish
       name: Publish Template to GitHub
       action: publish:github
+      if: ${{ parameters.action == 'create' }}      
       input:
         allowedHosts: ['github.com']
         description: This is ${{ parameters.agent_identifier_name }}  agent Repo for provisioning
