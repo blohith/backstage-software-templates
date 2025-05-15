@@ -93,10 +93,11 @@ jobs:
           terraform destroy -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=[${COMPONENT_LIST}]"
 
       - name: Save Audit Logs
+        if: env.ACTION == 'create'
         run: |
           mkdir -p audit
           echo "{\"agent\":\"${AGENT_NAME}\",\"components\":\"${COMPONENTS}\",\"action\":\"${ACTION}\",\"status\":\"success\"}" > audit/${AGENT_NAME}.json
-          git clone https://github.com/lohith-9Hi/ptr_iac_aws.git temp-audit
+          git clone https://${TOKEN_GITHUB}@github.com/lohith-9Hi/ptr_iac_aws.git temp-audit
           mkdir -p temp-audit/audit
           mv audit/${AGENT_NAME}.json temp-audit/audit/
           cd temp-audit

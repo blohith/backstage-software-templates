@@ -67,6 +67,7 @@ spec:
     - id: register
       name: Register Agent Repo in Backstage
       action: catalog:register
+      if: ${{ parameters.action == 'create' }}      
       input:
         repoContentsUrl: ${{steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
