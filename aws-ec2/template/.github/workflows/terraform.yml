@@ -15,14 +15,7 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest    
-    env:
-      AWS_ACCESS_KEY_ID: ${{ '${{ secrets.AWS_ACCESS_KEY_ID }}' }}
-      AWS_SECRET_ACCESS_KEY: ${{ '${{ secrets.AWS_SECRET_ACCESS_KEY }}' }}
-      AWS_REGION: ${{ '${{ secrets.AWS_REGION }}' }}
-      TOKEN_GITHUB: ${{ '${{ secrets.TOKEN_GITHUB }}' }}
-      COMPONENTS: ${{ '${{ github.event.inputs.components }}' }}
-      ACTION: ${{ '${{ github.event.inputs.agent_action }}' }}
-      AGENT_NAME: ${{ '${{ github.event.inputs.agent_identifier_name }}' }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -36,20 +29,6 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      - name: Prepare Terraform Backend
-        run: |
-          cat > backend.tf <<EOF2
-          terraform {
-            backend "s3" {
-              bucket = "proctor-runtime-infra-terraform-state"
-              key    = "states/${AGENT_NAME}/terraform.tfstate"
-              region = "us-east-1"
-              dynamodb_table = "runtime-infra-terraform-locks"
-              encrypt        = true
-            }
-          }
-          EOF2
-
       - name: Fetch Terraform Modules
         run: |
           echo "Generating main.tf for agent: $AGENT_NAME with components: $COMPONENTS"
@@ -60,7 +39,15 @@ jobs:
           echo "}" >> main.tf
           echo "----- Generated main.tf -----"
           cat main.tf
-      
+        env:
+          AWS_ACCESS_KEY_ID: ${{ '${{ secrets.AWS_ACCESS_KEY_ID }}' }}
+          AWS_SECRET_ACCESS_KEY: ${{ '${{ secrets.AWS_SECRET_ACCESS_KEY }}' }}
+          AWS_REGION: ${{ '${{ secrets.AWS_REGION }}' }}
+          TOKEN_GITHUB: ${{ '${{ secrets.TOKEN_GITHUB }}' }}
+          COMPONENTS: ${{ '${{ github.event.inputs.components }}' }}
+          ACTION: ${{ '${{ github.event.inputs.agent_action }}' }}
+          AGENT_NAME: ${{ '${{ github.event.inputs.agent_identifier_name }}' }}
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -68,8 +55,14 @@ jobs:
           aws-secret-access-key: ${{ '${{ secrets.AWS_SECRET_ACCESS_KEY }}' }}
           aws-region: 'us-east-1'
       
-      - name: Terraform Init
-        run: terraform init
+      - name: Terraform Init with Remote Backend
+        run: |
+          terraform init \
+            -backend-config="bucket=proctor-runtime-infra-terraform-state" \
+            -backend-config="key=states/${{ '${{ github.event.inputs.agent_identifier_name }}' }}/terraform.tfstate" \
+            -backend-config="region=us-east-1" \
+            -backend-config="dynamodb_table=runtime-infra-terraform-locks" \
+            -backend-config="encrypt=true"
 
       - name: Terraform Plan
         run: terraform plan -var="agent_name=${AGENT_NAME}" -var="components=${COMPONENTS}"
