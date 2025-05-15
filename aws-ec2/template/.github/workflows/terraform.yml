@@ -84,13 +84,13 @@ jobs:
         if: env.ACTION == 'create'
         run: |
           COMPONENT_LIST=$(echo "${COMPONENTS}" | awk -F',' '{for (i=1; i<=NF; i++) printf "\"%s\",", $i}' | sed 's/,$//')  
-          terraform apply -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENT_LIST}"
+          terraform apply -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=[${COMPONENT_LIST}]"
 
       - name: Terraform Destroy
         if: env.ACTION == 'destroy'
         run: |
           COMPONENT_LIST=$(echo "${COMPONENTS}" | awk -F',' '{for (i=1; i<=NF; i++) printf "\"%s\",", $i}' | sed 's/,$//')        
-          terraform destroy -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=${COMPONENT_LIST}"
+          terraform destroy -auto-approve -var="agent_identifier_name=${AGENT_NAME}" -var="components=[${COMPONENT_LIST}]"
 
       - name: Save Audit Logs
         run: |
