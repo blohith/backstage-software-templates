@@ -1,0 +1,91 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: destroy-dynamic-infra-provisioner
+  title: Destroy Runtime Dynamic AWS Infra Provisioning
+  description: Destroy AWS infrastructure dynamically for selected Agents.
+spec:
+  owner: development
+  type: service
+  parameters:
+    - title: Infra Request Inputs
+      required: [agent_identifier_name, platform, infra_components, action]
+      properties:
+        agent_identifier_name:
+          type: string
+          title: Agent Name
+        platform:
+          type: string
+          title: Hyperscaler Platform
+          enum: [AWS, Azure, GCP]
+        infra_components:
+          type: array
+          title: Infra Components Needed
+          items:
+            type: string
+            enum: [EC2, S3, ECR, EKS, SQS, Bedrock, Cloudfront]
+          uniqueItems: true
+        action:
+          type: string
+          title: Action
+          enum: destroy
+          default: destroy
+  steps:
+    - id: fetch-template
+      name: Fetch Template Files
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          agent_identifier_name: ${{ parameters.agent_identifier_name }}
+          components: ${{ parameters.infra_components | join(',') }}
+          agent_action: ${{ parameters.action }}
+
+    - id: publish
+      name: Publish Template to GitHub
+      action: publish:github
+      if: ${{ parameters.action == 'create' }}      
+      input:
+        allowedHosts: ['github.com']
+        description: This is ${{ parameters.agent_identifier_name }}  agent Repo for provisioning
+        repoUrl: github.com?owner=lohith-9Hi&repo=ptr-${{ parameters.agent_identifier_name }}
+        defaultBranch: main
+        repoVisibility: public
+
+    - id: trigger-terraform
+      name: Trigger GitHub Workflow
+      action: github:actions:dispatch
+      input:
+        workflowId: terraform.yml      
+        repoUrl: 'github.com?repo=ptr-${{ parameters.agent_identifier_name }}&owner=lohith-9Hi'
+        branchOrTagName: 'main'
+        workflowInputs:
+          agent_identifier_name: ${{ parameters.agent_identifier_name }}
+          components: ${{ parameters.infra_components | join(',') }}
+          agent_action: ${{ parameters.action }}          
+
+    - id: register
+      name: Register Agent Repo in Backstage
+      action: catalog:register
+      if: ${{ parameters.action == 'create' }}      
+      input:
+        repoContentsUrl: ${{steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: '/catalog-info.yaml'
+        
+    - id: notify-result
+      name: Notify Completion
+      action: debug:log
+      input:
+        message: 'Terraform provisioning has been triggered for agent ${{ parameters.agent_identifier_name }}.'
+
+  output:
+    links:
+      - title: Deployment Status
+        url: https://github.com/lohith-9Hi/ptr-${{ parameters.agent_identifier_name }}/actions/workflows/terraform.yml/badge.svg
+      - title: View Agent Repo
+        url: https://github.com/lohith-9Hi/ptr-${{ parameters.agent_identifier_name }}
+      - title: Repository
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['register'].output.entityRef }}       
