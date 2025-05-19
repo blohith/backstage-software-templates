@@ -2,8 +2,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: dynamic-infra-provisioner
-  title: Runtime Dynamic AWS Infra Provisioning
-  description: Provision or destroy AWS infrastructure dynamically for selected Agents.
+  title: Create Runtime Dynamic AWS Infra Provisioning
+  description: Provision AWS infrastructure dynamically for selected Agents.
 spec:
   owner: development
   type: service
