@@ -28,7 +28,8 @@ spec:
         action:
           type: string
           title: Action
-          enum: destroy
+          enum:
+            - destroy
           default: destroy
   steps:
     - id: fetch-template
