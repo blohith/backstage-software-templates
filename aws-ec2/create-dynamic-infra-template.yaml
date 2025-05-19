@@ -28,7 +28,7 @@ spec:
         action:
           type: string
           title: Action
-          enum: [create, destroy]
+          enum: create
           default: create
   steps:
     - id: fetch-template
